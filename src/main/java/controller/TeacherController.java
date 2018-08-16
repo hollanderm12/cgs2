@@ -1,9 +1,7 @@
 package controller;
 
-import java.util.List;
 import java.util.Map;
 import javax.validation.Valid;
-import model.Course;
 import model.Teacher;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -84,7 +82,6 @@ public class TeacherController
         return "redirect:/teacher_list";
     }
     
-    //If I delete a teacher that is registered to a course, it fails with a foreign key exception
     @RequestMapping(value = "/teacher_delete/{id}", method = RequestMethod.POST)
     public String postDeleteTeacher(@PathVariable("id") Integer id) {
         teacherService.removeTeacher(id);

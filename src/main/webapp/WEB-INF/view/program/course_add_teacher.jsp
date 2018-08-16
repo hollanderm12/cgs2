@@ -28,7 +28,7 @@
         <form:form action="./course_add_teacher" method="POST" commandName="register">
             <div class="w3-row-padding w3-margin-bottom">  
                 <div class="w3-third">
-                    <label>Course</label>
+                    <label><b>Course</b></label>
                     <form:select path="id1" cssClass ="w3-select w3-border">
                         <c:forEach var="c" items="${courseList}">
                             <form:option value="${c.courseID}" label="${c.courseID} - ${c.courseName}"/>
@@ -36,7 +36,7 @@
                     </form:select>
                 </div>
                 <div class="w3-third">
-                    <label>Teacher</label>
+                    <label><b>Teacher</b></label>
                     <form:select path="id2" cssClass ="w3-select w3-border">
                         <c:forEach var="t" items="${teacherList}">
                             <form:option value="${t.teacherID}" label="${t.teacherID} - ${t.firstName} ${t.lastName}"/>

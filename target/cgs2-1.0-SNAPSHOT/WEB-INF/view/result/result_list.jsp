@@ -17,7 +17,7 @@
     </div>
     <c:if test="${not empty statusMsg}">
         <div class="statusmsg">
-            <p><c:out value="${statusMsg}"/></p>
+            <c:out value="${statusMsg}"/>
         </div>
     </c:if>
     <jsp:include page="/resources/notifications/delete_result.jsp"/>

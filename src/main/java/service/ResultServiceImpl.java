@@ -71,7 +71,7 @@ public class ResultServiceImpl implements ResultService {
     @Override
     public Model populateDropdowns(Model model) {
         List<Student> studentList = studentService.listStudents();
-        List<Course> courseList = courseService.listCourses();       
+        List<Course> courseList = courseService.listCourses();
         if(studentList.isEmpty() || courseList.isEmpty()) {
             model.addAttribute("lookupError", true);
             if(studentList.isEmpty())

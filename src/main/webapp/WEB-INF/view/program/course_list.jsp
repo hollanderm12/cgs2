@@ -15,6 +15,11 @@
     <div class="w3-container w3-yellow w3-border-top w3-border-bottom w3-border-indigo w3-margin-bottom">
         <h2>List of courses</h2>
     </div>
+    <c:if test="${not empty statusMsg}">
+        <div class="statusmsg">
+            <p><c:out value="${statusMsg}"/></p>
+        </div>
+    </c:if>
     <jsp:include page="/resources/notifications/delete_course.jsp"/>
     <c:if test="${empty courseList}">
         <div class="w3-container w3-khaki w3-border-top w3-border-bottom w3-border-indigo w3-margin-bottom">

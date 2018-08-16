@@ -28,7 +28,7 @@
         <form:form action="./course_add_student" method="POST" commandName="register">
             <div class="w3-row-padding w3-margin-bottom">  
                 <div class="w3-third">
-                    <b>Course:</b>
+                    <b>Course</b>
                     <form:select path="id1" cssClass ="w3-select w3-border">
                         <c:forEach var="c" items="${courseList}">
                             <form:option value="${c.courseID}" label="${c.courseID} - ${c.courseName}"/>
@@ -36,7 +36,7 @@
                     </form:select>
                 </div>
                 <div class="w3-third">
-                    <b>Student:</b>
+                    <b>Student</b>
                     <form:select path="id2" cssClass ="w3-select w3-border">
                         <c:forEach var="s" items="${studentList}">
                             <form:option value="${s.studentID}" label="${s.studentID} - ${s.firstName} ${s.lastName}"/>
