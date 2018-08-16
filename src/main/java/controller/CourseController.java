@@ -5,7 +5,6 @@ import java.util.Map;
 import javax.validation.Valid;
 import model.Course;
 import util.Registration;
-import model.Student;
 import model.Teacher;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -16,6 +15,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.servlet.ModelAndView;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 import service.CourseService;
 import service.StudentService;
 import service.TeacherService;
@@ -91,19 +91,7 @@ public class CourseController {
     @RequestMapping(value = "/course_edit/{id}", method = RequestMethod.GET)
     public ModelAndView getCourseEdit(@PathVariable("id") String id) {
         ModelAndView model = new ModelAndView("program/course_edit");
-        Course t = new Course();
-        try {
-            t = courseService.getCourseById(Integer.parseInt(id));
-        }
-        catch(NumberFormatException ex) {
-            model.addObject("lookupError", true);
-            return model;
-        }
-        if(t == null)
-            model.addObject("lookupError", true);
-        else
-            model.addObject("detailsFound", t);
-        return model;
+        return courseService.lookupCourse(model, id);
     }
     
     @RequestMapping(value = "/course_edit/{id}", method = RequestMethod.POST)
@@ -124,85 +112,65 @@ public class CourseController {
     
     @RequestMapping(value = "/course_add_student", method = RequestMethod.GET)
     public String getStudentRegistration(Model model) {
-        List<Course> courseList = courseService.listCourses();
-        List<Student> studentList = studentService.listStudents();
-        if(courseList.isEmpty() || studentList.isEmpty()) {
-            model.addAttribute("lookupError", true);
-            if(courseList.isEmpty())
-                model.addAttribute("noCourses", true);
-            if(studentList.isEmpty())
-                model.addAttribute("noStudents", true);
-        }
-        else {
-            model.addAttribute("courseList", courseList);
-            model.addAttribute("studentList", studentList);
-            model.addAttribute("register", new Registration());
-        }          
+        model = courseService.populateDropdowns(model, true);          
         return "program/course_add_student";
     }
     
     @RequestMapping(value = "/course_add_student", method = RequestMethod.POST)
-    public String postStudentRegistration(@ModelAttribute("register") Registration r) {
+    public ModelAndView postStudentRegistration(@ModelAttribute("register") Registration r, RedirectAttributes redir) {
         Course c = courseService.getCourseById(r.getId1());
         if(!courseService.checkDuplicateStudent(r.getId2(), c.getStudentsRegistered())) {
             c.getStudentsRegistered().add(studentService.getStudentById(r.getId2()));       
             courseService.updateCourse(c);
+            redir.addFlashAttribute("statusMsg", "Student ID " + r.getId2() + " was successfully registered to this course.");
         }
-        return "redirect:/course_list";
+        else
+           redir.addFlashAttribute("statusMsg", "Student ID " + r.getId2() + " is already registered to this course."); 
+        return new ModelAndView("redirect:/course_details/" + r.getId1());
     }
     
     @RequestMapping(value = "/course_remove_student/{courseId}/{studentId}", method = RequestMethod.POST)
-    public String postUnregisterStudent(@PathVariable("courseId") String courseId, @PathVariable("studentId") String studentId) {
+    public String postUnregisterStudent(@PathVariable("courseId") String courseId, @PathVariable("studentId") String studentId, RedirectAttributes redir) {
         Course c = courseService.getCourseById(Integer.parseInt(courseId));
-        try {
-            c.getStudentsRegistered().remove(courseService.unregisterStudent(Integer.parseInt(studentId), c.getStudentsRegistered()));
-            courseService.updateCourse(c);
-        }
-        catch(NullPointerException ex) {
-            System.out.println("Tried to unregister a student that didn't exist.");
-        }        
+        int actuallyUnregistered = c.getTeachersRegistered().size();
+        c.getStudentsRegistered().remove(courseService.unregisterStudent(Integer.parseInt(studentId), c.getStudentsRegistered()));
+        if(actuallyUnregistered != c.getStudentsRegistered().size())
+            redir.addFlashAttribute("statusMsg", "Student ID " + studentId + " was successfully unregistered from course ID " + courseId + ".");
+        else
+            redir.addFlashAttribute("statusMsg", "Could not unregister student ID " + studentId + " from course ID " + courseId + ". Please verify if the student exists in the system.");
+        courseService.updateCourse(c);    
         return "redirect:../../course_details/" + courseId;
     }
     
     @RequestMapping(value = "/course_add_teacher", method = RequestMethod.GET)
     public String getTeacherRegistration(Model model) {
-        List<Course> courseList = courseService.listCourses();
-        List<Teacher> teacherList = teacherService.listTeachers();
-        if(courseList.isEmpty() || teacherList.isEmpty()) {
-            model.addAttribute("lookupError", true);
-            if(courseList.isEmpty())
-                model.addAttribute("noCourses", true);
-            if(teacherList.isEmpty())
-                model.addAttribute("noTeachers", true);
-        }
-        else {
-            model.addAttribute("courseList", courseList);
-            model.addAttribute("teacherList", teacherList);
-            model.addAttribute("register", new Registration());
-        }          
+        model = courseService.populateDropdowns(model, false);    
         return "program/course_add_teacher";
     }
     
     @RequestMapping(value = "/course_add_teacher", method = RequestMethod.POST)
-    public String postTeacherRegistration(@ModelAttribute("register") Registration r) {
+    public ModelAndView postTeacherRegistration(@ModelAttribute("register") Registration r, RedirectAttributes redir) {
         Course c = courseService.getCourseById(r.getId1());
         if(!courseService.checkDuplicateTeacher(r.getId2(), c.getTeachersRegistered())) {
             c.getTeachersRegistered().add(teacherService.getTeacherById(r.getId2()));       
             courseService.updateCourse(c);
+            redir.addFlashAttribute("statusMsg", "Teacher ID " + r.getId2() + " was successfully registered to this course.");
         }
-        return "redirect:/course_list";
+        else
+           redir.addFlashAttribute("statusMsg", "Teacher ID " + r.getId2() + " is already registered to this course."); 
+        return new ModelAndView("redirect:/course_details/" + r.getId1());
     }
     
     @RequestMapping(value = "/course_remove_teacher/{courseId}/{teacherId}", method = RequestMethod.POST)
-    public String postUnregisterTeacher(@PathVariable("courseId") String courseId, @PathVariable("teacherId") String teacherId) {
+    public String postUnregisterTeacher(@PathVariable("courseId") String courseId, @PathVariable("teacherId") String teacherId, RedirectAttributes redir) {
         Course c = courseService.getCourseById(Integer.parseInt(courseId));
-        try {
-            c.getTeachersRegistered().remove(courseService.unregisterTeacher(Integer.parseInt(teacherId), c.getTeachersRegistered()));
-            courseService.updateCourse(c);
-        }
-        catch(NullPointerException ex) {
-            System.out.println("Tried to unregister a teacher that didn't exist.");
-        }        
+        int actuallyUnregistered = c.getTeachersRegistered().size();
+        c.getTeachersRegistered().remove(courseService.unregisterTeacher(Integer.parseInt(teacherId), c.getTeachersRegistered()));
+        if(actuallyUnregistered != c.getTeachersRegistered().size())
+            redir.addFlashAttribute("statusMsg", "Teacher ID " + teacherId + " was successfully unregistered from course ID " + courseId + ".");
+        else
+            redir.addFlashAttribute("statusMsg", "Could not unregister teacher ID " + teacherId + " from course ID " + courseId + ". Please verify if the teacher exists in the system.");
+        courseService.updateCourse(c);    
         return "redirect:../../course_details/" + courseId;
     }
 }
