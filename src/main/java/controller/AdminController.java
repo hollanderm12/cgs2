@@ -15,5 +15,3 @@ public class AdminController
         return model;
     }
 }
-
-//Hello there!
