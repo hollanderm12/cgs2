@@ -15,6 +15,9 @@
     <div class="w3-container w3-yellow w3-border-top w3-border-bottom w3-border-indigo w3-margin-bottom">
         <h2>List of teachers</h2>
     </div>
+    <jsp:include page="/resources/notifications/status_messages.jsp">
+        <jsp:param name="statusMsg" value="${statusMsg}"/>
+    </jsp:include>
     <jsp:include page="/resources/notifications/delete_teacher.jsp"/>
     <c:if test="${empty teacherList}">
         <div class="w3-container w3-khaki w3-border-top w3-border-bottom w3-border-indigo w3-margin-bottom">

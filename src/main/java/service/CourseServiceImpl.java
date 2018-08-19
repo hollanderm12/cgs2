@@ -9,7 +9,6 @@ import model.Course;
 import model.Student;
 import model.Teacher;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.ui.Model;
 import org.springframework.web.servlet.ModelAndView;
 import util.Registration;
 
@@ -60,7 +59,7 @@ public class CourseServiceImpl implements CourseService {
     
     @Override
     @Transactional
-    public ModelAndView lookupCourse(ModelAndView model, String id) {
+    public ModelAndView lookupCourse(ModelAndView model, String id, boolean showRegistrations) {
         Course c;
         try {
             c = this.getCourseById(Integer.parseInt(id));
@@ -71,66 +70,87 @@ public class CourseServiceImpl implements CourseService {
         }
         if(c == null)
             model.addObject("lookupError", true);
-        else
+        else {
             model.addObject("detailsFound", c);
+            if(showRegistrations) {
+                model.addObject("studentsRegistered", c.getStudentsRegistered());
+                model.addObject("teachersRegistered", c.getTeachersRegistered());
+            }
+        }
         return model;
     }
     
     @Override
     @Transactional
-    public Model populateDropdowns(Model model, boolean studentToCourse) {
+    public ModelAndView populateDropdowns(ModelAndView model, boolean studentToCourse) {
         List<Course> courseList = this.listCourses();
         List listToUse = studentToCourse ? studentService.listStudents() : teacherService.listTeachers();
         if(courseList.isEmpty() || listToUse.isEmpty()) {
-            model.addAttribute("lookupError", true);
+            model.addObject("lookupError", true);
             if(courseList.isEmpty())
-                model.addAttribute("noCourses", true);
+                model.addObject("noCourses", true);
             if(listToUse.isEmpty())
                 if(studentToCourse)
-                    model.addAttribute("noStudents", true);
+                    model.addObject("noStudents", true);
                 else
-                    model.addAttribute("noTeachers", true);
+                    model.addObject("noTeachers", true);
         }
         else {
-            model.addAttribute("courseList", courseList);
+            model.addObject("courseList", courseList);
             if(studentToCourse)
-                model.addAttribute("studentList", listToUse);
+                model.addObject("studentList", listToUse);
             else
-                model.addAttribute("teacherList", listToUse);
-            model.addAttribute("register", new Registration());
+                model.addObject("teacherList", listToUse);
+            model.addObject("register", new Registration());
         }
         return model;
     }
     
     @Override
-    public boolean checkDuplicateStudent(int studentID, Set<Student> students) {
+    @Transactional
+    public boolean registerStudent(int courseID, int studentID) {
+        Course c = this.getCourseById(courseID);
+        Set<Student> students = c.getStudentsRegistered();
         for(Student s : students) 
             if(s.getStudentID() == studentID)
-                return true;       
-        return false;
+                return false;
+        c.getStudentsRegistered().add(studentService.getStudentById(studentID));       
+        this.updateCourse(c);
+        return true;
     }
 
     @Override
-    public boolean checkDuplicateTeacher(int teacherID, Set<Teacher> teachers) {
+    @Transactional
+    public boolean registerTeacher(int courseID, int teacherID) {
+        Course c = this.getCourseById(courseID);
+        Set<Teacher> teachers = c.getTeachersRegistered();
         for(Teacher t : teachers) 
             if(t.getTeacherID() == teacherID)
-                return true;       
+                return false;
+        c.getTeachersRegistered().add(teacherService.getTeacherById(teacherID));
+        this.updateCourse(c);
+        return true;
+    }
+        
+    @Override
+    @Transactional
+    public boolean unregisterStudent(int courseID, int studentID) {
+        Course c = this.getCourseById(courseID);
+        if(c.getStudentsRegistered().remove(studentService.getStudentById(studentID))) {
+            this.updateCourse(c);
+            return true;
+        }
         return false;
     }
     
     @Override
-    public Teacher unregisterTeacher(int teacherID, Set<Teacher> teachers) {
-        for(Teacher t : teachers)
-            if(t.getTeacherID() == teacherID)
-                return t;
-        return null;
-    }
-    
-    @Override
-    public Student unregisterStudent(int studentID, Set<Student> students) {
-        for(Student s : students)
-            if(s.getStudentID() == studentID)
-                return s;
-        return null;
+    @Transactional
+    public boolean unregisterTeacher(int courseID, int teacherID) {
+        Course c = this.getCourseById(courseID);
+        if(c.getTeachersRegistered().remove(teacherService.getTeacherById(teacherID))) {
+            this.updateCourse(c);
+            return true;
+        }
+        return false;
     }
 }

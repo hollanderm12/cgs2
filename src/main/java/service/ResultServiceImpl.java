@@ -8,7 +8,7 @@ import model.Student;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.ui.Model;
+import org.springframework.web.servlet.ModelAndView;
 
 @Service
 public class ResultServiceImpl implements ResultService {
@@ -24,30 +24,28 @@ public class ResultServiceImpl implements ResultService {
      
     @Override
     @Transactional
-    public int addResult(Result r) {
+    public boolean addResult(Result r) {
         Student s = studentService.getStudentById(Integer.parseInt(r.getStudentID()));
         if(!s.getCoursesRegistered().contains(courseService.getCourseById(Integer.parseInt(r.getCourseID()))))
-            return 0;
+            return false;
         else {
             r.setStudentResult(studentService.getStudentById(Integer.parseInt(r.getStudentID())));
             r.setCourseResult(courseService.getCourseById(Integer.parseInt(r.getCourseID())));
             resultDAO.addResult(r);
-            return 1;
+            return true;
         }
     }
 
     @Override
     @Transactional
-    public int updateResult(Result r) {
+    public boolean updateResult(Result r) {
         Student s = studentService.getStudentById(Integer.parseInt(r.getStudentID()));
         if(!s.getCoursesRegistered().contains(courseService.getCourseById(Integer.parseInt(r.getCourseID()))))
-            return 0;
-        else {
-            r.setStudentResult(studentService.getStudentById(Integer.parseInt(r.getStudentID())));
-            r.setCourseResult(courseService.getCourseById(Integer.parseInt(r.getCourseID())));
-            resultDAO.updateResult(r);
-            return 1;
-        }
+            return false;
+        r.setStudentResult(studentService.getStudentById(Integer.parseInt(r.getStudentID())));
+        r.setCourseResult(courseService.getCourseById(Integer.parseInt(r.getCourseID())));
+        resultDAO.updateResult(r);
+        return true;
     }
 
     @Override
@@ -69,40 +67,40 @@ public class ResultServiceImpl implements ResultService {
     }
     
     @Override
-    public Model populateDropdowns(Model model) {
+    public ModelAndView populateDropdowns(ModelAndView model) {
         List<Student> studentList = studentService.listStudents();
         List<Course> courseList = courseService.listCourses();
         if(studentList.isEmpty() || courseList.isEmpty()) {
-            model.addAttribute("lookupError", true);
+            model.addObject("lookupError", true);
             if(studentList.isEmpty())
-                model.addAttribute("noStudents", true);
+                model.addObject("noStudents", true);
             if(courseList.isEmpty())
-                model.addAttribute("noCourses", true);         
+                model.addObject("noCourses", true);         
         }
         else {
-            model.addAttribute("studentList", studentList);
-            model.addAttribute("courseList", courseList);
-            model.addAttribute("command", new Result());
+            model.addObject("studentList", studentList);
+            model.addObject("courseList", courseList);
+            model.addObject("command", new Result());
         }
         return model;
     }
 
     @Override
     @Transactional
-    public Model lookupResult(Model model, String id) {
+    public ModelAndView lookupResult(ModelAndView model, String id) {
         Result r;
         try {
             r = this.getResultById(Integer.parseInt(id));
         }
         catch(NumberFormatException ex) {
-            model.addAttribute("lookupError", true);
+            model.addObject("lookupError", true);
             return model;
         }
         if(r == null)
-            model.addAttribute("lookupError", true);
+            model.addObject("lookupError", true);
         else {
             model = this.populateDropdowns(model);
-            model.addAttribute("detailsFound", r);
+            model.addObject("detailsFound", r);
         }
         return model;
     }

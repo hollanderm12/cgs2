@@ -2,14 +2,14 @@ package service;
 
 import java.util.List;
 import model.Result;
-import org.springframework.ui.Model;
+import org.springframework.web.servlet.ModelAndView;
 
 public interface ResultService {
-    public int addResult(Result r);
-    public int updateResult(Result r);
+    public boolean addResult(Result r);
+    public boolean updateResult(Result r);
     public List<Result> listResults();
     public Result getResultById(int id);
     public void removeResult(int id, Result r);
-    public Model populateDropdowns(Model model);
-    public Model lookupResult(Model model, String id);
+    public ModelAndView populateDropdowns(ModelAndView model);
+    public ModelAndView lookupResult(ModelAndView model, String id);
 }

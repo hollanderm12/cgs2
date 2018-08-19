@@ -5,7 +5,7 @@
     </div>
 </c:if>
 <c:if test="${not empty param.warningMsg}">
-    <div class="statusmsg w3-margin-top">
+    <div class="warningmsg w3-margin-top">
         <c:out value="${param.warningMsg}"/>
     </div>
 </c:if>

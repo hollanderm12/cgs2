@@ -278,12 +278,17 @@ hr{border:0;border-top:1px solid #eee;margin:20px 0}
     border: 3px solid #ff0000;
 }
 
+.warningmsg {
+    background-color: #ffb36d;
+    border: 3px solid #ff7200;
+}
+
 .statusmsg {
     background-color: #ebffce;
     border: 3px solid #008000;
 }
 
-.errorblock, .statusmsg {
+.errorblock, .warningmsg, .statusmsg {
     color: #000;    
     padding: 8px;
     margin: 0px 16px 16px 16px;    

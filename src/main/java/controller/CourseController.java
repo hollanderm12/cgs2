@@ -1,176 +1,140 @@
 package controller;
 
-import java.util.List;
 import java.util.Map;
 import javax.validation.Valid;
 import model.Course;
 import util.Registration;
-import model.Teacher;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 import service.CourseService;
-import service.StudentService;
-import service.TeacherService;
 
 @Controller
 public class CourseController {
     @Autowired
     private CourseService courseService;
-    @Autowired
-    private StudentService studentService;
-    @Autowired
-    private TeacherService teacherService;
     
     @ModelAttribute("command")
     public Course createCourseModel() {
         return new Course();
     }
     
-    @RequestMapping(value = "/course_list", method = RequestMethod.GET)
+    @GetMapping(value = "/course_list")
     public ModelAndView showListCourses() {
-        ModelAndView model = new ModelAndView("program/course_list");
-        model.addObject("courseList", courseService.listCourses());
-        return model;
+        return new ModelAndView("program/course_list", "courseList", courseService.listCourses());
     }
     
-    @RequestMapping(value = "/course_add", method = RequestMethod.GET)
-    public String getAddCourse(Model model) {
-        model.addAttribute("command", new Course());
-        return "program/course_add";
+    @GetMapping(value = "/course_add")
+    public ModelAndView getAddCourse() {
+        return new ModelAndView("program/course_add", "command", new Course());
     }
     
-    @RequestMapping(value = "/course_add", method = RequestMethod.POST)
-    public String postAddCourse(@ModelAttribute("command") @Valid Course c, BindingResult br, Map model) {
+    @PostMapping(value = "/course_add")
+    public ModelAndView postAddCourse(@ModelAttribute("command") @Valid Course c, BindingResult br, RedirectAttributes redir) {
         if(br.hasErrors())
-            return "program/course_add";
+            return new ModelAndView("program/course_add");
         courseService.addCourse(c);
-        return "redirect:/course_list";
+        redir.addFlashAttribute("statusMsg", "Course ID " + c.getCourseID() + " was added successfully.");
+        return new ModelAndView("redirect:/course_list");
     }
     
-    @RequestMapping(value = "/course_details", method = RequestMethod.GET)
+    @GetMapping(value = "/course_details")
     public ModelAndView showCourseDetails() {
-        ModelAndView model = new ModelAndView("program/course_details");
-        return model;
+        return new ModelAndView("program/course_details");
     }
     
-    @RequestMapping(value = "/course_details/{id}", method = RequestMethod.GET)
+    @GetMapping(value = "/course_details/{id}")
     public ModelAndView getCourseDetails(@PathVariable("id") String id) {
-        ModelAndView model = new ModelAndView("program/course_details");
-        Course c = new Course();
-        try {
-            c = courseService.getCourseById(Integer.parseInt(id));
-        }
-        catch(NumberFormatException ex) {
-            model.addObject("lookupError", true);
-            return model;
-        }
-        if(c == null)
-            model.addObject("lookupError", true);
-        else {
-            model.addObject("detailsFound", c);
-            model.addObject("studentsRegistered", c.getStudentsRegistered());
-            model.addObject("teachersRegistered", c.getTeachersRegistered());
-        }
-        return model;
+       return courseService.lookupCourse(new ModelAndView("program/course_details"), id, true);         
     }
     
-    @RequestMapping(value = "/course_edit", method = RequestMethod.GET)
+    @GetMapping(value = "/course_edit")
     public ModelAndView showCourseEdit() {
-        ModelAndView model = new ModelAndView("program/course_edit");
-        return model;
+        return new ModelAndView("program/course_edit");
     }
     
-    @RequestMapping(value = "/course_edit/{id}", method = RequestMethod.GET)
+    @GetMapping(value = "/course_edit/{id}")
     public ModelAndView getCourseEdit(@PathVariable("id") String id) {
-        ModelAndView model = new ModelAndView("program/course_edit");
-        return courseService.lookupCourse(model, id);
+        return courseService.lookupCourse(new ModelAndView("program/course_edit"), id, false);
     }
     
-    @RequestMapping(value = "/course_edit/{id}", method = RequestMethod.POST)
-    public String postCourseEdit(@PathVariable("id") String id, @ModelAttribute("command") @Valid Course t, BindingResult br, Map model) {
+    @PostMapping(value = "/course_edit/{id}")
+    public ModelAndView postCourseEdit(@PathVariable("id") Integer id, @ModelAttribute("command") @Valid Course c, BindingResult br, Map model, RedirectAttributes redir) {
         if(br.hasErrors())
-            return "/program/course_edit/" + id;
-        t.setCourseID(Integer.parseInt(id));
-        courseService.updateCourse(t);
-        return "redirect:/course_list";
+            return courseService.lookupCourse(new ModelAndView("program/course_edit"), id.toString(), false);
+        c.setCourseID(id);
+        courseService.updateCourse(c);
+        redir.addFlashAttribute("statusMsg", "Course ID " + c.getCourseID() + " was edited successfully.");
+        return new ModelAndView("redirect:/course_details/" + id);
     }
     
-    @RequestMapping(value = "/course_delete/{id}", method = RequestMethod.POST)
-    public String postDeleteCourse(@PathVariable("id") String id) {
-        Course c = courseService.getCourseById(Integer.parseInt(id));
-        courseService.removeCourse(Integer.parseInt(id), c);
-        return "redirect:/course_list";
+    @PostMapping(value = "/course_delete/{id}")
+    public ModelAndView postDeleteCourse(@PathVariable("id") Integer id, RedirectAttributes redir) {
+        courseService.removeCourse(id, courseService.getCourseById(id));
+        redir.addFlashAttribute("statusMsg", "Course ID " + id + " was deleted successfully.");
+        return new ModelAndView("redirect:/course_list");
     }
     
-    @RequestMapping(value = "/course_add_student", method = RequestMethod.GET)
-    public String getStudentRegistration(Model model) {
-        model = courseService.populateDropdowns(model, true);          
-        return "program/course_add_student";
+    @GetMapping(value = "/course_add_student")
+    public ModelAndView getStudentRegistration() {
+        return courseService.populateDropdowns(new ModelAndView("program/course_add_student"), true);          
     }
     
-    @RequestMapping(value = "/course_add_student", method = RequestMethod.POST)
+    @GetMapping(value = "/course_add_student/{id}")
+    public ModelAndView getStudentRegistrationSpecificCourse(@PathVariable("id") String courseId) {    
+        return courseService.populateDropdowns(new ModelAndView("program/course_add_student", "courseIdChosen", courseId), true);
+    }
+    
+    @PostMapping(value = "/course_add_student")
     public ModelAndView postStudentRegistration(@ModelAttribute("register") Registration r, RedirectAttributes redir) {
-        Course c = courseService.getCourseById(r.getId1());
-        if(!courseService.checkDuplicateStudent(r.getId2(), c.getStudentsRegistered())) {
-            c.getStudentsRegistered().add(studentService.getStudentById(r.getId2()));       
-            courseService.updateCourse(c);
+        if(courseService.registerStudent(r.getId1(), r.getId2()))
             redir.addFlashAttribute("statusMsg", "Student ID " + r.getId2() + " was successfully registered to this course.");
-        }
         else
-           redir.addFlashAttribute("statusMsg", "Student ID " + r.getId2() + " is already registered to this course."); 
+            redir.addFlashAttribute("warningMsg", "Student ID " + r.getId2() + " is already registered to this course."); 
         return new ModelAndView("redirect:/course_details/" + r.getId1());
     }
     
-    @RequestMapping(value = "/course_remove_student/{courseId}/{studentId}", method = RequestMethod.POST)
-    public String postUnregisterStudent(@PathVariable("courseId") String courseId, @PathVariable("studentId") String studentId, RedirectAttributes redir) {
-        Course c = courseService.getCourseById(Integer.parseInt(courseId));
-        int actuallyUnregistered = c.getTeachersRegistered().size();
-        c.getStudentsRegistered().remove(courseService.unregisterStudent(Integer.parseInt(studentId), c.getStudentsRegistered()));
-        if(actuallyUnregistered != c.getStudentsRegistered().size())
+    @PostMapping(value = "/course_remove_student/{courseId}/{studentId}")
+    public ModelAndView postUnregisterStudent(@PathVariable("courseId") Integer courseId, @PathVariable("studentId") Integer studentId, RedirectAttributes redir) {
+        if(courseService.unregisterStudent(courseId, studentId))
             redir.addFlashAttribute("statusMsg", "Student ID " + studentId + " was successfully unregistered from course ID " + courseId + ".");
         else
-            redir.addFlashAttribute("statusMsg", "Could not unregister student ID " + studentId + " from course ID " + courseId + ". Please verify if the student exists in the system.");
-        courseService.updateCourse(c);    
-        return "redirect:../../course_details/" + courseId;
+            redir.addFlashAttribute("errorMsg", "Could not unregister student ID " + studentId + " from course ID " + courseId + ". Please verify if the student exists in the system.");
+        return new ModelAndView("redirect:/course_details/" + courseId);
     }
     
-    @RequestMapping(value = "/course_add_teacher", method = RequestMethod.GET)
-    public String getTeacherRegistration(Model model) {
-        model = courseService.populateDropdowns(model, false);    
-        return "program/course_add_teacher";
+    @GetMapping(value = "/course_add_teacher")
+    public ModelAndView getTeacherRegistration(Model model) {
+        return courseService.populateDropdowns(new ModelAndView("program/course_add_teacher"), false);
     }
     
-    @RequestMapping(value = "/course_add_teacher", method = RequestMethod.POST)
+    @GetMapping(value = "/course_add_teacher/{id}")
+    public ModelAndView getTeacherRegistrationSpecificCourse(@PathVariable("id") String courseId) {
+        return courseService.populateDropdowns(new ModelAndView("program/course_add_teacher", "courseIdChosen", courseId), false);
+    }
+    
+    @PostMapping(value = "/course_add_teacher")
     public ModelAndView postTeacherRegistration(@ModelAttribute("register") Registration r, RedirectAttributes redir) {
-        Course c = courseService.getCourseById(r.getId1());
-        if(!courseService.checkDuplicateTeacher(r.getId2(), c.getTeachersRegistered())) {
-            c.getTeachersRegistered().add(teacherService.getTeacherById(r.getId2()));       
-            courseService.updateCourse(c);
+        if(courseService.registerTeacher(r.getId1(), r.getId2()))
             redir.addFlashAttribute("statusMsg", "Teacher ID " + r.getId2() + " was successfully registered to this course.");
-        }
         else
-           redir.addFlashAttribute("statusMsg", "Teacher ID " + r.getId2() + " is already registered to this course."); 
+            redir.addFlashAttribute("warningMsg", "Teacher ID " + r.getId2() + " is already registered to this course."); 
         return new ModelAndView("redirect:/course_details/" + r.getId1());
     }
     
-    @RequestMapping(value = "/course_remove_teacher/{courseId}/{teacherId}", method = RequestMethod.POST)
-    public String postUnregisterTeacher(@PathVariable("courseId") String courseId, @PathVariable("teacherId") String teacherId, RedirectAttributes redir) {
-        Course c = courseService.getCourseById(Integer.parseInt(courseId));
-        int actuallyUnregistered = c.getTeachersRegistered().size();
-        c.getTeachersRegistered().remove(courseService.unregisterTeacher(Integer.parseInt(teacherId), c.getTeachersRegistered()));
-        if(actuallyUnregistered != c.getTeachersRegistered().size())
+    @PostMapping(value = "/course_remove_teacher/{courseId}/{teacherId}")
+    public ModelAndView postUnregisterTeacher(@PathVariable("courseId") Integer courseId, @PathVariable("teacherId") Integer teacherId, RedirectAttributes redir) {
+        if(courseService.unregisterTeacher(courseId, teacherId))
             redir.addFlashAttribute("statusMsg", "Teacher ID " + teacherId + " was successfully unregistered from course ID " + courseId + ".");
         else
-            redir.addFlashAttribute("statusMsg", "Could not unregister teacher ID " + teacherId + " from course ID " + courseId + ". Please verify if the teacher exists in the system.");
-        courseService.updateCourse(c);    
-        return "redirect:../../course_details/" + courseId;
+            redir.addFlashAttribute("errorMsg", "Could not unregister teacher ID " + teacherId + " from course ID " + courseId + ". Please verify if the teacher exists in the system.");
+        return new ModelAndView("redirect:/course_details/" + courseId);
     }
 }

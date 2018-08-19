@@ -15,6 +15,9 @@
     <div class="w3-container w3-light-green w3-border-top w3-border-bottom w3-border-indigo w3-margin-bottom">
         <h2>Add a result</h2>
     </div>
+    <jsp:include page="/resources/notifications/status_messages.jsp">
+        <jsp:param name="warningMsg" value="${warningMsg}"/>
+    </jsp:include>
     <c:if test="${lookupError}">
         <c:if test="${noCourses}">
             <p>There are no courses present in the system. Please add at least one course.<p>
@@ -24,12 +27,6 @@
         </c:if>
     </c:if>
     <c:if test="${not lookupError}">
-        <c:if test="${studentNotRegistered}">
-            <div class="errorblock">
-                <p>Student ID <c:out value="${badStudentID}"/> is not registered in course ID <c:out value="${badCourseID}"/>. 
-                    Please verify the student's course registrations and try again.</p>
-            </div>
-        </c:if>
         <form:form action="./result_add" method="POST" commandName="command" cssClass="w3-container"> 
             <jsp:include page="/resources/form_display/result_form.jsp"/>
              <div class="w3-row-padding w3-margin-bottom">

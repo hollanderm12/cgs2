@@ -1,11 +1,7 @@
 package service;
 
 import java.util.List;
-import java.util.Set;
 import model.Course;
-import model.Student;
-import model.Teacher;
-import org.springframework.ui.Model;
 import org.springframework.web.servlet.ModelAndView;
 
 public interface CourseService {
@@ -14,10 +10,10 @@ public interface CourseService {
     public List<Course> listCourses();
     public Course getCourseById(int id);
     public void removeCourse(int id, Course c);
-    public ModelAndView lookupCourse(ModelAndView model, String id);
-    public Model populateDropdowns(Model model, boolean studentToCourse);
-    public boolean checkDuplicateStudent(int studentID, Set<Student> students);
-    public boolean checkDuplicateTeacher(int teacherID, Set<Teacher> teachers);
-    public Teacher unregisterTeacher(int teacherID, Set<Teacher> teachers);
-    public Student unregisterStudent(int studentID, Set<Student> students);
+    public ModelAndView lookupCourse(ModelAndView model, String id, boolean showRegistrations);
+    public ModelAndView populateDropdowns(ModelAndView model, boolean studentToCourse);
+    public boolean registerStudent(int courseID, int studentID);
+    public boolean registerTeacher(int courseID, int teacherID);
+    public boolean unregisterStudent(int courseID, int studentID);
+    public boolean unregisterTeacher(int courseID, int teacherID);  
 }

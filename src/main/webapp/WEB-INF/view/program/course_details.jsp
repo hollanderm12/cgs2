@@ -15,11 +15,11 @@
     <div class="w3-container w3-yellow w3-border-top w3-border-bottom w3-border-indigo">
         <h2>Course details</h2>
     </div>
-    <c:if test="${not empty statusMsg}">
-        <div class="statusmsg w3-margin-top">
-            <c:out value="${statusMsg}"/>
-        </div>
-    </c:if>
+    <jsp:include page="/resources/notifications/status_messages.jsp">
+        <jsp:param name="statusMsg" value="${statusMsg}"/>
+        <jsp:param name="warningMsg" value="${warningMsg}"/>
+        <jsp:param name="errorMsg" value="${errorMsg}"/>
+    </jsp:include>
     <c:if test="${lookupError}">
         <div class="errorblock w3-margin-top">
             <p>The course ID specified was not found. Please verify the course ID and try again.</p>
@@ -52,11 +52,11 @@
             </div>
             <div class="w3-panel w3-border-top w3-border-indigo">
                 <c:if test="${empty studentsRegistered}">
-                    <h3>There are no students registered in this course. Click <a href="/cgs2/course_add_student">here</a> to register a student.</h3>
+                    <h3>There are no students registered in this course.</h3>
                 </c:if>
                 <c:if test="${not empty studentsRegistered}">
                     <h3>The following students are registered in this course:</h3>
-                    <table class="w3-table-all">
+                    <table class="w3-table-all w3-margin-bottom">
                         <tr>
                             <th>ID</th>
                             <th>First Name</th>
@@ -79,16 +79,19 @@
                                 </form>                              
                             </tr>
                         </c:forEach>
-                    </table>
+                    </table>                   
                 </c:if>
+                <form action="../course_add_student/${c.courseID}" methood="GET">
+                    <input type="submit" class="w3-button w3-medium w3-amber w3-border w3-border-black" value="Register a Student">
+                </form>
             </div>
             <div class="w3-panel w3-border-top w3-border-indigo">
                 <c:if test="${empty teachersRegistered}">
-                    <h3>There are no teachers registered in this course. Click <a href="/cgs2/course_add_teacher">here</a> to register a teacher.</h3>
+                    <h3>There are no teachers registered in this course.</h3>
                 </c:if>           
                 <c:if test="${not empty teachersRegistered}">
                     <h3>The following teachers are registered in this course:</h3>
-                    <table class="w3-table-all">
+                    <table class="w3-table-all w3-margin-bottom">
                         <tr>
                             <th>ID</th>
                             <th>First Name</th>
@@ -113,6 +116,9 @@
                         </c:forEach>
                     </table>
                 </c:if>
+                <form action="../course_add_teacher/${c.courseID}" methood="GET">
+                    <input type="submit" class="w3-button w3-medium w3-amber w3-border w3-border-black" value="Register a Teacher">
+                </form>
             </div>
         </c:if>
     </div>

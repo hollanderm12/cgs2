@@ -6,7 +6,7 @@
 <head>
     <meta charset="utf-8">
     <title>Add Student to Course</title>
-    <link rel="stylesheet" type="text/css" href="./resources/w3css.css">
+    <link rel="stylesheet" type="text/css" href="/cgs2/resources/w3css.css">
     <script src="/cgs2/resources/js/Registration.js"></script>
 </head>
 <body class="w3-khaki">
@@ -25,13 +25,18 @@
         </c:if>
     </c:if>
     <c:if test="${not lookupError}">
-        <form:form action="./course_add_student" method="POST" commandName="register">
+        <form:form action="/cgs2/course_add_student" method="POST" commandName="register">
             <div class="w3-row-padding w3-margin-bottom">  
                 <div class="w3-third">
                     <b>Course</b>
                     <form:select path="id1" cssClass ="w3-select w3-border">
                         <c:forEach var="c" items="${courseList}">
-                            <form:option value="${c.courseID}" label="${c.courseID} - ${c.courseName}"/>
+                            <c:if test="${courseIdChosen == c.courseID}">
+                                <form:option selected="true" value="${c.courseID}" label="${c.courseID} - ${c.courseName}"/>
+                            </c:if>
+                            <c:if test="${courseIdChosen != c.courseID}">
+                                <form:option value="${c.courseID}" label="${c.courseID} - ${c.courseName}"/>
+                            </c:if>
                         </c:forEach>
                     </form:select>
                 </div>

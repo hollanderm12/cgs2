@@ -31,7 +31,8 @@ public class StudentServiceImpl implements StudentService {
 
     @Override
     @Transactional
-    public void updateStudent(Student s) {
+    public void updateStudent(Student s, int id) {
+        s.setStudentID(id);
         studentDAO.updateStudent(s);
     }
 
@@ -53,8 +54,8 @@ public class StudentServiceImpl implements StudentService {
         Student s = this.getStudentById(id);
         List<Course> courseList = courseService.listCourses();
         for(Course c : courseList)
-            if(c.getStudentsRegistered().remove(courseService.unregisterStudent(id, c.getStudentsRegistered())))
-                courseService.updateCourse(c);
+            if(s.getCoursesRegistered().contains(c))
+                courseService.unregisterStudent(c.getCourseID(), id);
         List<Result> resultList = resultService.listResults();
         for(Result r : resultList)
             if(r.getStudentResult().equals(s))
@@ -64,19 +65,22 @@ public class StudentServiceImpl implements StudentService {
     
     @Override
     @Transactional
-    public ModelAndView lookupStudent(ModelAndView model, String id) {
+    public ModelAndView lookupStudent(ModelAndView model, String id, boolean listRegisteredCourses) {
         Student s;
         try {
             s = this.getStudentById(Integer.parseInt(id));
         }
         catch(NumberFormatException ex) {
-            model.addObject("lookupError", true);
+            model.addObject("errorMsg", "The student ID specified was not found. Please verify the student ID and try again.");
             return model;
         }
         if(s == null)
-            model.addObject("lookupError", true);
-        else
+            model.addObject("errorMsg", "The student ID specified was not found. Please verify the student ID and try again.");
+        else {
             model.addObject("detailsFound", s);
+            if(listRegisteredCourses)
+                model.addObject("coursesRegistered", s.getCoursesRegistered());
+        }
         return model;
     }
 }

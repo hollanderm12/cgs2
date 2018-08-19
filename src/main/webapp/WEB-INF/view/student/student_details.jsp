@@ -16,11 +16,10 @@
     <div class="w3-container w3-light-blue w3-border-top w3-border-bottom w3-border-indigo">
         <h2>Student details</h2>
     </div>
-    <c:if test="${lookupError}">
-        <div class="errorblock w3-margin-top">
-            <p>The student ID specified was not found. Please verify the student ID and try again.</p>
-        </div>
-    </c:if>
+    <jsp:include page="/resources/notifications/status_messages.jsp">
+        <jsp:param name="statusMsg" value="${statusMsg}"/>
+        <jsp:param name="errorMsg" value="${errorMsg}"/>
+    </jsp:include>
     <div class="w3-container">
         <c:set var="s" scope="page" value="${detailsFound}"/>
         <c:if test="${empty s}">
@@ -53,6 +52,28 @@
                             class="w3-button w3-large w3-blue w3-border w3-border-black">Edit Student</button>
                     </form>
                 </div>
+            </div>
+            <div class="w3-panel w3-border-top w3-border-indigo">
+                <c:if test="${empty coursesRegistered}">
+                    <h3>This student is not registered in any courses.</h3>
+                </c:if>
+                <c:if test="${not empty coursesRegistered}">
+                    <h3>This student is registered in the following courses:</h3>
+                    <table class="w3-table-all">
+                        <tr>
+                            <th>ID</th>
+                            <th>Course Name</th>
+                            <th>Credits</th>
+                        </tr>
+                        <c:forEach var="c" items="${coursesRegistered}">
+                            <tr>
+                                <td>${c.courseID}</td>
+                                <td>${c.courseName}</td>
+                                <td>${c.credits}</td>
+                            </tr>
+                        </c:forEach>
+                    </table>
+                </c:if>
             </div>
         </c:if>
     </div>

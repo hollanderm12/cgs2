@@ -22,14 +22,15 @@ public class TeacherServiceImpl implements TeacherService {
      
     @Override
     @Transactional
-    public void addTeacher(Teacher s) {
-        teacherDAO.addTeacher(s);
+    public void addTeacher(Teacher t) {
+        teacherDAO.addTeacher(t);
     }
 
     @Override
     @Transactional
-    public void updateTeacher(Teacher s) {
-        teacherDAO.updateTeacher(s);
+    public void updateTeacher(Teacher t, int id) {
+        t.setTeacherID(id);
+        teacherDAO.updateTeacher(t);
     }
 
     @Override
@@ -47,10 +48,11 @@ public class TeacherServiceImpl implements TeacherService {
     @Override
     @Transactional
     public void removeTeacher(int id) {
+        Teacher t = this.getTeacherById(id);
         List<Course> courseList = courseService.listCourses();
         for(Course c : courseList)
-            if(c.getTeachersRegistered().remove(courseService.unregisterTeacher(id, c.getTeachersRegistered())))
-                courseService.updateCourse(c);
+            if(c.getTeachersRegistered().contains(t))
+                courseService.unregisterTeacher(c.getCourseID(), id);
         teacherDAO.removeTeacher(id);
     }
     
@@ -62,11 +64,11 @@ public class TeacherServiceImpl implements TeacherService {
             t = this.getTeacherById(Integer.parseInt(id));
         }
         catch(NumberFormatException ex) {
-            model.addObject("lookupError", true);
+            model.addObject("errorMsg", "The teacher ID specified was not found. Please verify the teacher ID and try again.");
             return model;
         }
         if(t == null)
-            model.addObject("lookupError", true);
+            model.addObject("errorMsg", "The teacher ID specified was not found. Please verify the teacher ID and try again.");
         else {
             model.addObject("detailsFound", t);
             if(listRegisteredCourses)

@@ -1,17 +1,16 @@
 package controller;
 
-import java.util.Map;
 import javax.validation.Valid;
 import model.Teacher;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
-import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.servlet.ModelAndView;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 import service.CourseService;
 import service.TeacherService;
 
@@ -28,63 +27,58 @@ public class TeacherController
         return new Teacher();
     }
     
-    @RequestMapping(value = {"/programs", "/teacher_list"}, method = RequestMethod.GET)
+    @GetMapping(value = {"/programs", "/teacher_list"})
     public ModelAndView showListTeachers() {
-        ModelAndView model = new ModelAndView("program/teacher_list");
-        model.addObject("teacherList", teacherService.listTeachers());
-        return model;
+        return new ModelAndView("program/teacher_list", "teacherList", teacherService.listTeachers());
     }
     
-    @RequestMapping(value = "/teacher_add", method = RequestMethod.GET)
-    public String getAddTeacher(Model model) {
-        model.addAttribute("command", new Teacher());
-        return "program/teacher_add";
+    @GetMapping(value = "/teacher_add")
+    public ModelAndView getAddTeacher() {
+        return new ModelAndView("program/teacher_add", "command", new Teacher());
     }
     
-    @RequestMapping(value = "/teacher_add", method = RequestMethod.POST)
-    public String postAddTeacher(@ModelAttribute("command") @Valid Teacher t, BindingResult br, Map model) {
+    @PostMapping(value = "/teacher_add")
+    public ModelAndView postAddTeacher(@ModelAttribute("command") @Valid Teacher t, BindingResult br, RedirectAttributes redir) {
         if(br.hasErrors())
-            return "program/teacher_add";
+            return new ModelAndView("program/teacher_add");
         teacherService.addTeacher(t);
-        return "redirect:/teacher_list";
+        redir.addFlashAttribute("statusMsg", "Teacher ID " + t.getTeacherID() + " was added successfully.");
+        return new ModelAndView("redirect:/teacher_list");
     }
     
-    @RequestMapping(value = "/teacher_details", method = RequestMethod.GET)
+    @GetMapping(value = "/teacher_details")
     public ModelAndView showTeacherDetails() {
-        ModelAndView model = new ModelAndView("program/teacher_details");
-        return model;
+        return new ModelAndView("program/teacher_details");
     }
     
-    @RequestMapping(value = "/teacher_details/{id}", method = RequestMethod.GET)
+    @GetMapping(value = "/teacher_details/{id}")
     public ModelAndView getTeacherDetails(@PathVariable("id") String id) {
-        ModelAndView model = new ModelAndView("program/teacher_details");
-        return teacherService.lookupTeacher(model, id, true);
+        return teacherService.lookupTeacher(new ModelAndView("program/teacher_details"), id, true);
     }
     
-    @RequestMapping(value = "/teacher_edit", method = RequestMethod.GET)
+    @GetMapping(value = "/teacher_edit")
     public ModelAndView showTeacherEdit() {
-        ModelAndView model = new ModelAndView("program/teacher_edit");
-        return model;
+        return new ModelAndView("program/teacher_edit");
     }
     
-    @RequestMapping(value = "/teacher_edit/{id}", method = RequestMethod.GET)
+    @GetMapping(value = "/teacher_edit/{id}")
     public ModelAndView getTeacherEdit(@PathVariable("id") String id) {
-        ModelAndView model = new ModelAndView("program/teacher_edit");
-        return teacherService.lookupTeacher(model, id, false);
+        return teacherService.lookupTeacher(new ModelAndView("program/teacher_edit"), id, false);
     }
     
-    @RequestMapping(value = "/teacher_edit/{id}", method = RequestMethod.POST)
-    public String postTeacherEdit(@PathVariable("id") String id, @ModelAttribute("command") @Valid Teacher t, BindingResult br, Map model) {
+    @PostMapping(value = "/teacher_edit/{id}")
+    public ModelAndView postTeacherEdit(@PathVariable("id") Integer id, @ModelAttribute("command") @Valid Teacher t, BindingResult br, RedirectAttributes redir) {
         if(br.hasErrors())
-            return "/program/teacher_edit/" + id;
-        t.setTeacherID(Integer.parseInt(id));
-        teacherService.updateTeacher(t);
-        return "redirect:/teacher_list";
+            return teacherService.lookupTeacher(new ModelAndView("program/teacher_edit"), id.toString(), false); 
+        teacherService.updateTeacher(t, id);
+        redir.addFlashAttribute("statusMsg", "Student ID " + t.getTeacherID() + " was edited successfully.");
+        return new ModelAndView("redirect:/teacher_details/" + id);
     }
     
-    @RequestMapping(value = "/teacher_delete/{id}", method = RequestMethod.POST)
-    public String postDeleteTeacher(@PathVariable("id") Integer id) {
+    @PostMapping(value = "/teacher_delete/{id}")
+    public ModelAndView postDeleteTeacher(@PathVariable("id") Integer id, RedirectAttributes redir) {
         teacherService.removeTeacher(id);
-        return "redirect:/teacher_list";
+        redir.addFlashAttribute("statusMsg", "Teacher ID " + id + " was deleted successfully.");
+        return new ModelAndView("redirect:/teacher_list");
     }
 }

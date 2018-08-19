@@ -17,11 +17,9 @@
     <div class="w3-container w3-light-blue w3-border-top w3-border-bottom w3-border-indigo">
         <h2>Edit student</h2>
     </div>
-    <c:if test="${lookupError}">
-        <div class="errorblock w3-margin-top">
-            <p>The student ID specified was not found. Please verify the student ID and try again.</p>
-        </div>
-    </c:if>
+    <jsp:include page="/resources/notifications/status_messages.jsp">
+        <jsp:param name="errorMsg" value="${errorMsg}"/>
+    </jsp:include>
     <div class="w3-container">
         <c:set var="s" scope="page" value="${detailsFound}"/>
         <c:if test="${empty s}">

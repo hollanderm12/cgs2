@@ -15,11 +15,10 @@
     <div class="w3-container w3-yellow w3-border-top w3-border-bottom w3-border-indigo">
         <h2>Teacher details</h2>
     </div>
-    <c:if test="${lookupError}">
-        <div class="errorblock w3-margin-top">
-            <p>The teacher ID specified was not found. Please verify the teacher ID and try again.</p>
-        </div>
-    </c:if>
+    <jsp:include page="/resources/notifications/status_messages.jsp">
+        <jsp:param name="statusMsg" value="${statusMsg}"/>
+        <jsp:param name="errorMsg" value="${errorMsg}"/>
+    </jsp:include>
     <div class="w3-container">
         <c:set var="t" scope="page" value="${detailsFound}"/>
         <c:if test="${empty t}">

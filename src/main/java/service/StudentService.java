@@ -6,9 +6,9 @@ import org.springframework.web.servlet.ModelAndView;
 
 public interface StudentService {
     public void addStudent(Student s);
-    public void updateStudent(Student s);
+    public void updateStudent(Student s, int id);
     public List<Student> listStudents();
     public Student getStudentById(int id);
     public void removeStudent(int id);    
-    public ModelAndView lookupStudent(ModelAndView model, String id);
+    public ModelAndView lookupStudent(ModelAndView model, String id, boolean listRegisteredCourses);
 }

@@ -6,7 +6,7 @@ import org.springframework.web.servlet.ModelAndView;
 
 public interface TeacherService {
     public void addTeacher(Teacher s);
-    public void updateTeacher(Teacher s);
+    public void updateTeacher(Teacher s, int id);
     public List<Teacher> listTeachers();
     public Teacher getTeacherById(int id);
     public void removeTeacher(int id);

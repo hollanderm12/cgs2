@@ -15,11 +15,9 @@
     <div class="w3-container w3-light-green w3-border-top w3-border-bottom w3-border-indigo w3-margin-bottom">
         <h2>List of results</h2>
     </div>
-    <c:if test="${not empty statusMsg}">
-        <div class="statusmsg">
-            <c:out value="${statusMsg}"/>
-        </div>
-    </c:if>
+    <jsp:include page="/resources/notifications/status_messages.jsp">
+        <jsp:param name="statusMsg" value="${statusMsg}"/>
+    </jsp:include>
     <jsp:include page="/resources/notifications/delete_result.jsp"/>
     <c:if test="${empty resultList}">
         <div class="w3-container w3-pale-green w3-border-top w3-border-bottom w3-border-indigo w3-margin-bottom">
