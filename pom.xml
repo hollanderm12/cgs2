@@ -56,8 +56,7 @@
             <artifactId>javax.el</artifactId>
             <version>3.0.0</version>
         </dependency>
-
-
+        
         <!-- Javassist (Allows Hibernate to use its proxy model) -->
         <dependency>
             <groupId>org.javassist</groupId>
@@ -99,7 +98,17 @@
             <artifactId>spring-orm</artifactId>
             <version>4.3.9.RELEASE</version>
         </dependency>
-        
+        <dependency>
+            <groupId>org.springframework</groupId>
+            <artifactId>spring-context</artifactId>
+            <version>4.3.9.RELEASE</version>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework</groupId>
+            <artifactId>spring-context-support</artifactId>
+            <version>4.3.9.RELEASE</version>
+        </dependency>
+         
         <!-- Servlet -->
         <dependency>
             <groupId>javax.servlet</groupId>
@@ -120,6 +129,14 @@
             <artifactId>jstl</artifactId>
             <version>1.2</version>
         </dependency>
+        
+        <!-- Java Mail -->
+        <dependency>
+            <groupId>com.sun.mail</groupId>
+            <artifactId>javax.mail</artifactId>
+            <version>1.6.1</version>
+        </dependency>
+            
     </dependencies>
 
     <build>

@@ -11,4 +11,5 @@ public interface StudentService {
     public Student getStudentById(int id);
     public void removeStudent(int id);    
     public ModelAndView lookupStudent(ModelAndView model, String id, boolean listRegisteredCourses);
+    public boolean sendResultsEmail(int id);
 }

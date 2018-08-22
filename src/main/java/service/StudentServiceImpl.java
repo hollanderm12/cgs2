@@ -4,6 +4,7 @@ import java.util.List;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import dao.StudentDAO;
+import mail.MailSender;
 import model.Course;
 import model.Result;
 import model.Student;
@@ -78,9 +79,17 @@ public class StudentServiceImpl implements StudentService {
             model.addObject("errorMsg", "The student ID specified was not found. Please verify the student ID and try again.");
         else {
             model.addObject("detailsFound", s);
-            if(listRegisteredCourses)
+            if(listRegisteredCourses) {
                 model.addObject("coursesRegistered", s.getCoursesRegistered());
+                model.addObject("resultsOfStudent", s.getResults());
+            }
         }
         return model;
+    }
+    
+    @Override
+    @Transactional
+    public boolean sendResultsEmail(int id) {
+        return MailSender.sendResults(this.getStudentById(id));
     }
 }

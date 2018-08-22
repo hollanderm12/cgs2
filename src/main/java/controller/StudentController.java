@@ -1,6 +1,7 @@
 package controller;
 
 import javax.validation.Valid;
+import mail.MailSender;
 import model.Student;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -52,6 +53,15 @@ public class StudentController
     @GetMapping(value = "/student_details/{id}")
     public ModelAndView getStudentDetails(@PathVariable("id") String id) {
         return studentService.lookupStudent(new ModelAndView("student/student_details"), id, true);
+    }
+    
+    @PostMapping(value = "/student_details/email/{id}")
+    public ModelAndView emailStudentResults(@PathVariable("id") Integer id, RedirectAttributes redir) {
+        if(studentService.sendResultsEmail(id))
+            redir.addFlashAttribute("statusMsg", "The results email sent successfully.");
+        else
+            redir.addFlashAttribute("errorMsg", "There was a problem with sending the results email. Please check the server logs for error information.");
+        return new ModelAndView("redirect:/student_details/" + id);
     }
     
     @GetMapping(value = "/student_edit")

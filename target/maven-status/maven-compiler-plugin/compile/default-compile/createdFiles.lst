@@ -1,7 +1,9 @@
+mail\MailConfig.class
 dao\StudentDAO.class
 service\StudentService.class
 model\Result.class
 service\CourseService.class
+mail\MailSender$1.class
 dao\TeacherDAOImpl.class
 model\Course.class
 model\Student.class
@@ -22,5 +24,6 @@ service\CourseServiceImpl.class
 service\ResultServiceImpl.class
 dao\CourseDAOImpl.class
 dao\StudentDAOImpl.class
+mail\MailSender.class
 service\TeacherServiceImpl.class
 util\Registration.class

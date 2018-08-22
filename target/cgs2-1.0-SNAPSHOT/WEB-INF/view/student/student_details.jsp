@@ -75,6 +75,31 @@
                     </table>
                 </c:if>
             </div>
+            <div class="w3-panel w3-border-top w3-border-indigo">                
+                <c:if test="${empty resultsOfStudent}">
+                    <h3>This student does not have any results.</h3>
+                </c:if>
+                <c:if test="${not empty resultsOfStudent}">
+                    <h3>This student has the following results:</h3>
+                    <table class="w3-table-all">
+                        <tr>
+                            <th>ID</th>
+                            <th>Session ID</th>
+                            <th>Mark</th>
+                        </tr>
+                        <c:forEach var="r" items="${resultsOfStudent}">
+                            <tr>
+                                <td>${r.resultID}</td>
+                                <td>${r.sessionID}</td>
+                                <td>${r.mark}</td>
+                            </tr>
+                        </c:forEach>
+                    </table>
+                    <form action="../student_details/email/${s.studentID}" method="POST">
+                        <input type="submit" class="w3-button w3-medium w3-blue w3-border w3-border-black w3-margin-top" value="Email Results to Student">
+                    </form>
+                </c:if>
+            </div>
         </c:if>
     </div>
 </body>
