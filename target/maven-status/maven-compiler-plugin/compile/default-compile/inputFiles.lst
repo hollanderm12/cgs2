@@ -10,9 +10,12 @@ D:\Projects\NetBeans\cgs2\cgs2\src\main\java\util\Registration.java
 D:\Projects\NetBeans\cgs2\cgs2\src\main\java\dao\ResultDAOImpl.java
 D:\Projects\NetBeans\cgs2\cgs2\src\main\java\model\Teacher.java
 D:\Projects\NetBeans\cgs2\cgs2\src\main\java\mail\MailSender.java
+D:\Projects\NetBeans\cgs2\cgs2\src\main\java\util\LogThis.java
+D:\Projects\NetBeans\cgs2\cgs2\src\main\java\configuration\SecSecurityConfig.java
 D:\Projects\NetBeans\cgs2\cgs2\src\main\java\controller\ResultController.java
 D:\Projects\NetBeans\cgs2\cgs2\src\main\java\model\Course.java
 D:\Projects\NetBeans\cgs2\cgs2\src\main\java\mail\MailConfig.java
+D:\Projects\NetBeans\cgs2\cgs2\src\main\java\controller\GlobalExceptionHandler.java
 D:\Projects\NetBeans\cgs2\cgs2\src\main\java\service\TeacherService.java
 D:\Projects\NetBeans\cgs2\cgs2\src\main\java\model\Result.java
 D:\Projects\NetBeans\cgs2\cgs2\src\main\java\dao\CourseDAOImpl.java
@@ -24,5 +27,6 @@ D:\Projects\NetBeans\cgs2\cgs2\src\main\java\dao\ResultDAO.java
 D:\Projects\NetBeans\cgs2\cgs2\src\main\java\service\ResultService.java
 D:\Projects\NetBeans\cgs2\cgs2\src\main\java\dao\StudentDAOImpl.java
 D:\Projects\NetBeans\cgs2\cgs2\src\main\java\service\TeacherServiceImpl.java
+D:\Projects\NetBeans\cgs2\cgs2\src\main\java\util\Level.java
 D:\Projects\NetBeans\cgs2\cgs2\src\main\java\controller\StudentController.java
 D:\Projects\NetBeans\cgs2\cgs2\src\main\java\model\Student.java

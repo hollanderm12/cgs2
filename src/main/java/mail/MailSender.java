@@ -9,14 +9,14 @@ import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mail.javamail.MimeMessageHelper;
 import org.springframework.mail.javamail.MimeMessagePreparator;
 
-public class MailSender {
-
+public class MailSender {   
+    
     public static boolean sendResults(Student s) {
         return sendResultsEmail(s);     
     }
     
     public static boolean sendResultsEmail(final Student s) {
-        JavaMailSender mailSender = MailConfig.getJavaMailSender();
+        JavaMailSender sender = MailConfig.getJavaMailSender();
         MimeMessagePreparator preparator = new MimeMessagePreparator() {
             @Override
             public void prepare(MimeMessage mimeMessage) throws Exception {
@@ -24,12 +24,12 @@ public class MailSender {
                 helper.setTo(s.getEmail());
                 helper.setFrom("mcit_cgs2@gmail.com");
                 helper.setSubject("College Grading System: Results for " + s.getFirstName() + " " + s.getLastName() + 
-                        " (Student ID" + s.getStudentID() + ")");
+                        " (Student ID " + s.getStudentID() + ")");
                 mimeMessage.setContent(buildResultsEmail(s), "text/html; charset=utf-8");
                 }          
             };
         try {
-            mailSender.send(preparator);
+            sender.send(preparator);
         }
         catch(MailException ex) {
             //TODO: Logging

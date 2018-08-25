@@ -84,12 +84,14 @@
                     <table class="w3-table-all">
                         <tr>
                             <th>ID</th>
+                            <th>Course Name</th>
                             <th>Session ID</th>
                             <th>Mark</th>
                         </tr>
                         <c:forEach var="r" items="${resultsOfStudent}">
                             <tr>
                                 <td>${r.resultID}</td>
+                                <td>${r.courseResult.courseName}</td>
                                 <td>${r.sessionID}</td>
                                 <td>${r.mark}</td>
                             </tr>

@@ -3,7 +3,7 @@ package dao;
 
 import java.util.List;
 import model.Student;
-import org.hibernate.Hibernate;
+import org.hibernate.HibernateException;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -30,6 +30,7 @@ public class StudentDAOImpl implements StudentDAO {
     public void updateStudent(Student s) {
         Session session = this.sessionFactory.getCurrentSession();
         session.update(s);
+        System.out.println("Here!");
     }
 
     @SuppressWarnings("unchecked")

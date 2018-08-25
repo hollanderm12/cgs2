@@ -1,8 +1,8 @@
 package controller;
 
 import javax.validation.Valid;
-import mail.MailSender;
 import model.Student;
+import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -14,10 +14,14 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 import service.StudentService;
+import util.Level;
+import util.LogThis;
 
 @Controller
 public class StudentController 
 {   
+    final static Logger LOGGER = Logger.getLogger(StudentController.class);
+       
     @Autowired
     private StudentService studentService;
 
@@ -28,6 +32,7 @@ public class StudentController
     
     @GetMapping(value = {"/students", "/student_list"})
     public ModelAndView showListStudents() {
+        LogThis.log(LOGGER, Level.WARN, "Logging method works! Hahaha!");
         return new ModelAndView("student/student_list", "studentList", studentService.listStudents());
     }
  
@@ -77,7 +82,7 @@ public class StudentController
     @PostMapping(value = "/student_edit/{id}")
     public ModelAndView postStudentEdit(@PathVariable("id") Integer id, @ModelAttribute("command") @Valid Student s, BindingResult br, Model model, RedirectAttributes redir) {
         if(br.hasErrors())
-            return studentService.lookupStudent(new ModelAndView("student/student_edit"), id.toString(), false); 
+            return studentService.lookupStudent(new ModelAndView("student/student_edit"), id.toString(), false);
         studentService.updateStudent(s, id);
         redir.addFlashAttribute("statusMsg", "Student ID " + s.getStudentID() + " was edited successfully.");
         return new ModelAndView("redirect:/student_details/" + id);
