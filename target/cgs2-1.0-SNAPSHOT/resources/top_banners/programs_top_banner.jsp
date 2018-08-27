@@ -25,5 +25,5 @@
                     <a href="/cgs2/course_add_teacher" class="w3-bar-item w3-button">Add Teacher to Course</a>
             </div>
     </div>
-    <span style="float: right"><a href="#" class="w3-bar-item w3-button">Log In</a></span>
+    <jsp:include page="./logout_item.jsp"/>   
 </div>
