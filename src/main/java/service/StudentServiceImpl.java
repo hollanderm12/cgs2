@@ -4,7 +4,8 @@ import java.util.List;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import dao.StudentDAO;
-import mail.MailSender;
+import java.util.Collections;
+import mail.MailMail;
 import model.Course;
 import model.Result;
 import model.Student;
@@ -19,6 +20,8 @@ public class StudentServiceImpl implements StudentService {
     private CourseService courseService;
     @Autowired
     private ResultService resultService;
+    @Autowired
+    private MailMail mailMail;   
 
     public void setStudentDAO(StudentDAO studentDAO) {
         this.studentDAO = studentDAO;
@@ -90,6 +93,6 @@ public class StudentServiceImpl implements StudentService {
     @Override
     @Transactional
     public boolean sendResultsEmail(int id) {
-        return MailSender.sendResults(this.getStudentById(id));
+        return mailMail.sendResults(this.getStudentById(id));
     }
 }

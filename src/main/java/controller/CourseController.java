@@ -1,8 +1,9 @@
 package controller;
 
-import java.util.Map;
+import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
 import model.Course;
+import org.apache.log4j.Logger;
 import util.Registration;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -15,9 +16,14 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 import service.CourseService;
+import util.Level;
+import util.LogThis;
 
 @Controller
 public class CourseController {
+    
+    final static Logger LOGGER = Logger.getLogger(CourseController.class);
+    
     @Autowired
     private CourseService courseService;
     
@@ -37,11 +43,12 @@ public class CourseController {
     }
     
     @PostMapping(value = "/course_add")
-    public ModelAndView postAddCourse(@ModelAttribute("command") @Valid Course c, BindingResult br, RedirectAttributes redir) {
+    public ModelAndView postAddCourse(@ModelAttribute("command") @Valid Course c, BindingResult br, RedirectAttributes redir, HttpServletRequest req) {
         if(br.hasErrors())
             return new ModelAndView("program/course_add");
         courseService.addCourse(c);
         redir.addFlashAttribute("statusMsg", "Course ID " + c.getCourseID() + " was added successfully.");
+        LogThis.log(LOGGER, Level.INFO, "Course ID " + c.getCourseID() + " was added by user " + req.getRemoteUser());
         return new ModelAndView("redirect:/course_list");
     }
     
@@ -66,19 +73,21 @@ public class CourseController {
     }
     
     @PostMapping(value = "/course_edit/{id}")
-    public ModelAndView postCourseEdit(@PathVariable("id") Integer id, @ModelAttribute("command") @Valid Course c, BindingResult br, Map model, RedirectAttributes redir) {
+    public ModelAndView postCourseEdit(@PathVariable("id") Integer id, @ModelAttribute("command") @Valid Course c, BindingResult br, RedirectAttributes redir, HttpServletRequest req) {
         if(br.hasErrors())
             return courseService.lookupCourse(new ModelAndView("program/course_edit"), id.toString(), false);
         c.setCourseID(id);
         courseService.updateCourse(c);
         redir.addFlashAttribute("statusMsg", "Course ID " + c.getCourseID() + " was edited successfully.");
+        LogThis.log(LOGGER, Level.INFO, "Course ID " + c.getCourseID() + " was edited by user " + req.getRemoteUser());
         return new ModelAndView("redirect:/course_details/" + id);
     }
     
     @PostMapping(value = "/course_delete/{id}")
-    public ModelAndView postDeleteCourse(@PathVariable("id") Integer id, RedirectAttributes redir) {
+    public ModelAndView postDeleteCourse(@PathVariable("id") Integer id, RedirectAttributes redir, HttpServletRequest req) {
         courseService.removeCourse(id, courseService.getCourseById(id));
         redir.addFlashAttribute("statusMsg", "Course ID " + id + " was deleted successfully.");
+        LogThis.log(LOGGER, Level.INFO, "Teacher ID " + id + " was deleted by user " + req.getRemoteUser());
         return new ModelAndView("redirect:/course_list");
     }
     
@@ -130,7 +139,7 @@ public class CourseController {
     }
     
     @PostMapping(value = "/course_remove_teacher/{courseId}/{teacherId}")
-    public ModelAndView postUnregisterTeacher(@PathVariable("courseId") Integer courseId, @PathVariable("teacherId") Integer teacherId, RedirectAttributes redir) {
+    public ModelAndView postUnregisterTeacher(@PathVariable("courseId") Integer courseId, @PathVariable("teacherId") Integer teacherId, RedirectAttributes redir, HttpServletRequest req) {
         if(courseService.unregisterTeacher(courseId, teacherId))
             redir.addFlashAttribute("statusMsg", "Teacher ID " + teacherId + " was successfully unregistered from course ID " + courseId + ".");
         else

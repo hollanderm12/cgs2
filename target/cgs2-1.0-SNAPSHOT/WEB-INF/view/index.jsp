@@ -1,3 +1,9 @@
+<%@taglib uri="http://java.sun.com/jsp/jstl/core" prefix ="c"%>
+<c:set var="isLoggedIn" value="${pageContext.request.remoteUser}"/>
+<c:set var="isAdmin" value="${pageContext.request.isUserInRole('ROLE_ADMIN')}"/>
+<c:set var="isStudent" value="${pageContext.request.isUserInRole('ROLE_STUDENT')}"/>
+<c:set var="isProgram" value="${pageContext.request.isUserInRole('ROLE_PROGRAM')}"/>
+<c:set var="isTeacher" value="${pageContext.request.isUserInRole('ROLE_TEACHER')}"/>
 <!DOCTYPE html>
 <html>
 <head>
@@ -13,46 +19,52 @@
     <div class="w3-container w3-pale-blue w3-border-top w3-border-bottom w3-border-indigo w3-margin-bottom">
         <p>Welcome to the College Grading System, a site where student administrators, program administrators, and teachers can easily and efficiently enter student, teacher, course, and result information.</p>
         <p>To begin, use the links below, or the menu to the left. You will need to log in to access the appropriate resources.</p>
-        <p>Please note that <b>JavaScript must be enabled</b> for full website functionality.</p>
+        <p>Please note that <b>JavaScript must be enabled</b> for full site functionality.</p>
     </div>
     <div class="w3-row-padding w3-margin-top">
-        <div class="w3-third">
-            <div class="w3-card w3-pale-blue w3-padding-small">
-                <h3 class="w3-center">For Student Administrators</h3>
-                <div class="w3-container">
-                    <button class="w3-button w3-block w3-blue" style="width:100%"><a href="/cgs2/student_add">Add Student</a></button>
-                    <button class="w3-button w3-block w3-blue" style="width:100%"><a href="/cgs2/student_list">List Students</a></button>
-                    <button class="w3-button w3-block w3-blue" style="width:100%"><a href="/cgs2/student_edit">Edit Student</a></button>
-                    <button class="w3-button w3-block w3-blue" style="width:100%"><a href="/cgs2/student_details">Student Details</a></button>
+        <c:if test="${empty isLoggedIn || isAdmin || isStudent}">
+            <div class="w3-third">
+                <div class="w3-card w3-pale-blue w3-padding-small">
+                    <h3 class="w3-center">For Student Administrators</h3>
+                    <div class="w3-container">
+                        <button class="w3-button w3-block w3-blue" style="width:100%"><a href="/cgs2/student_add">Add Student</a></button>
+                        <button class="w3-button w3-block w3-blue" style="width:100%"><a href="/cgs2/student_list">List Students</a></button>
+                        <button class="w3-button w3-block w3-blue" style="width:100%"><a href="/cgs2/student_edit">Edit Student</a></button>
+                        <button class="w3-button w3-block w3-blue" style="width:100%"><a href="/cgs2/student_details">Student Details</a></button>
+                    </div>
                 </div>
             </div>
-        </div>
-        <div class="w3-third">
-            <div class="w3-card w3-khaki w3-padding-small">
-                <h3 class="w3-center">For Program Administrators</h3>
-                <div class="w3-container">
-                    <button class="w3-button w3-block w3-amber" style="width:100%"><a href="/cgs2/teacher_add">Add Teacher</a></button>
-                    <button class="w3-button w3-block w3-amber" style="width:100%"><a href="/cgs2/teacher_list">List Teachers</a></button>
-                    <button class="w3-button w3-block w3-amber" style="width:100%"><a href="/cgs2/teacher_edit">Edit Teacher</a></button>
-                    <button class="w3-button w3-block w3-amber" style="width:100%"><a href="/cgs2/teacher_details">Teacher Details</a></button>
-                    <button class="w3-button w3-block w3-amber" style="width:100%"><a href="/cgs2/course_add">Add Course</a></button>
-                    <button class="w3-button w3-block w3-amber" style="width:100%"><a href="/cgs2/course_list">List Courses</a></button>
-                    <button class="w3-button w3-block w3-amber" style="width:100%"><a href="/cgs2/course_edit">Edit Course</a></button>
-                    <button class="w3-button w3-block w3-amber" style="width:100%"><a href="/cgs2/course_details">Course Details</a></button>
-                    <button class="w3-button w3-block w3-amber" style="width:100%"><a href="/cgs2/course_add_student">Add Student to Course</a></button>
-                    <button class="w3-button w3-block w3-amber" style="width:100%"><a href="/cgs2/course_add_teacher">Add Teacher to Course</a></button>
+        </c:if>
+        <c:if test="${empty isLoggedIn || isAdmin || isProgram}">
+            <div class="w3-third">
+                <div class="w3-card w3-khaki w3-padding-small">
+                    <h3 class="w3-center">For Program Administrators</h3>
+                    <div class="w3-container">
+                        <button class="w3-button w3-block w3-amber" style="width:100%"><a href="/cgs2/teacher_add">Add Teacher</a></button>
+                        <button class="w3-button w3-block w3-amber" style="width:100%"><a href="/cgs2/teacher_list">List Teachers</a></button>
+                        <button class="w3-button w3-block w3-amber" style="width:100%"><a href="/cgs2/teacher_edit">Edit Teacher</a></button>
+                        <button class="w3-button w3-block w3-amber" style="width:100%"><a href="/cgs2/teacher_details">Teacher Details</a></button>
+                        <button class="w3-button w3-block w3-amber" style="width:100%"><a href="/cgs2/course_add">Add Course</a></button>
+                        <button class="w3-button w3-block w3-amber" style="width:100%"><a href="/cgs2/course_list">List Courses</a></button>
+                        <button class="w3-button w3-block w3-amber" style="width:100%"><a href="/cgs2/course_edit">Edit Course</a></button>
+                        <button class="w3-button w3-block w3-amber" style="width:100%"><a href="/cgs2/course_details">Course Details</a></button>
+                        <button class="w3-button w3-block w3-amber" style="width:100%"><a href="/cgs2/course_add_student">Add Student to Course</a></button>
+                        <button class="w3-button w3-block w3-amber" style="width:100%"><a href="/cgs2/course_add_teacher">Add Teacher to Course</a></button>
+                    </div>
                 </div>
             </div>
-        </div>
-        <div class="w3-third">
-            <div class="w3-card w3-pale-green w3-padding-small">
-                <h3 class="w3-center">For Teachers</h3>
-                <div class="w3-container">
-                    <button class="w3-button w3-block w3-green" style="width:100%"><a href="/cgs2/result_add">Add Result</a></button>
-                    <button class="w3-button w3-block w3-green" style="width:100%"><a href="/cgs2/result_list">List Results</a></button>
-                    <button class="w3-button w3-block w3-green" style="width:100%"><a href="/cgs2/result_edit">Edit Result</a></button>
+        </c:if>
+        <c:if test="${empty isLoggedIn || isAdmin || isTeacher}">
+            <div class="w3-third">
+                <div class="w3-card w3-pale-green w3-padding-small">
+                    <h3 class="w3-center">For Teachers</h3>
+                    <div class="w3-container">
+                        <button class="w3-button w3-block w3-green" style="width:100%"><a href="/cgs2/result_add">Add Result</a></button>
+                        <button class="w3-button w3-block w3-green" style="width:100%"><a href="/cgs2/result_list">List Results</a></button>
+                        <button class="w3-button w3-block w3-green" style="width:100%"><a href="/cgs2/result_edit">Edit Result</a></button>
+                    </div>
                 </div>
             </div>
-        </div>
+        </c:if>
     </div>
 </body>

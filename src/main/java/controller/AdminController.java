@@ -7,7 +7,7 @@ import org.springframework.web.servlet.ModelAndView;
 @Controller
 public class AdminController 
 {
-    @GetMapping(value={"", "/index.html", "index"} )
+    @GetMapping(value={"/index.html", "index"} )
     public ModelAndView getIndex() {
         return new ModelAndView("index");
     }

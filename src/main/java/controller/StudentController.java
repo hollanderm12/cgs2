@@ -1,5 +1,6 @@
 package controller;
 
+import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
 import model.Student;
 import org.apache.log4j.Logger;
@@ -32,7 +33,6 @@ public class StudentController
     
     @GetMapping(value = {"/students", "/student_list"})
     public ModelAndView showListStudents() {
-        LogThis.log(LOGGER, Level.WARN, "Logging method works! Hahaha!");
         return new ModelAndView("student/student_list", "studentList", studentService.listStudents());
     }
  
@@ -42,11 +42,12 @@ public class StudentController
     }
     
     @PostMapping(value = "/student_add")
-    public ModelAndView postAddStudent(@ModelAttribute("command") @Valid Student s, BindingResult br, RedirectAttributes redir) {
+    public ModelAndView postAddStudent(@ModelAttribute("command") @Valid Student s, BindingResult br, RedirectAttributes redir, HttpServletRequest req) {
         if(br.hasErrors())
             return new ModelAndView("student/student_add");
         studentService.addStudent(s);
         redir.addFlashAttribute("statusMsg", "Student ID " + s.getStudentID() + " was added successfully.");
+        LogThis.log(LOGGER, Level.INFO, "Student ID " + s.getStudentID() + " was added by user " + req.getRemoteUser());
         return new ModelAndView("redirect:/student_list");
     }
 
@@ -80,18 +81,20 @@ public class StudentController
     }
     
     @PostMapping(value = "/student_edit/{id}")
-    public ModelAndView postStudentEdit(@PathVariable("id") Integer id, @ModelAttribute("command") @Valid Student s, BindingResult br, Model model, RedirectAttributes redir) {
+    public ModelAndView postStudentEdit(@PathVariable("id") Integer id, @ModelAttribute("command") @Valid Student s, BindingResult br, RedirectAttributes redir,  HttpServletRequest req) {
         if(br.hasErrors())
             return studentService.lookupStudent(new ModelAndView("student/student_edit"), id.toString(), false);
         studentService.updateStudent(s, id);
         redir.addFlashAttribute("statusMsg", "Student ID " + s.getStudentID() + " was edited successfully.");
+        LogThis.log(LOGGER, Level.INFO, "Student ID " + id + " was edited by user " + req.getRemoteUser());
         return new ModelAndView("redirect:/student_details/" + id);
     }
     
     @PostMapping(value = "/student_delete/{id}")
-    public ModelAndView postDeleteStudent(@PathVariable("id") Integer id, RedirectAttributes redir) {
+    public ModelAndView postDeleteStudent(@PathVariable("id") Integer id, RedirectAttributes redir, HttpServletRequest req) {
         studentService.removeStudent(id);
         redir.addFlashAttribute("statusMsg", "Student ID " + id + " was deleted successfully.");
+        LogThis.log(LOGGER, Level.INFO, "Student ID " + id + " was deleted by user " + req.getRemoteUser());
         return new ModelAndView("redirect:/student_list");
     }
 }
