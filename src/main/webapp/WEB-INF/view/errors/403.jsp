@@ -8,7 +8,7 @@
 </head>
 <body class="w3-pale-red">
     <div class="w3-bar w3-blue">
-        <jsp:include page="/resources/top_banners/error_top_banner.jsp"/>
+        <jsp:include page="/resources/top_banners/empty_top_banner.jsp"/>
     </div>
     <div class="w3-container w3-red w3-border-top w3-border-indigo">
         <h2>Access forbidden</h2>

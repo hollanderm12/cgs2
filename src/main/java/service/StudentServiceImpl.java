@@ -4,7 +4,6 @@ import java.util.List;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import dao.StudentDAO;
-import java.util.Collections;
 import mail.MailMail;
 import model.Course;
 import model.Result;

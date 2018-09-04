@@ -3,7 +3,6 @@ package dao;
 
 import java.util.List;
 import model.Student;
-import org.hibernate.HibernateException;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
 import org.springframework.beans.factory.annotation.Autowired;
